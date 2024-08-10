@@ -1,0 +1,22 @@
+spring:
+  datasource:
+    url: "rds-url"
+    username: sa
+    password:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+  jpa:
+    hibernate:
+      ddl-auto: update
+
+management:
+  zipkin:
+    tracing:
+      endpoint: "http://localhost:9411/api/v2/spans"
+  tracing:
+    sampling:
+      probability: 1.0
+
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:19090/eureka/

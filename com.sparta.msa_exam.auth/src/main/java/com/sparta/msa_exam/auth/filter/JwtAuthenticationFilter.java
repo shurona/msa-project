@@ -1,4 +1,4 @@
-package com.sparta.msa_exam.filter;
+package com.sparta.msa_exam.auth.filter;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sparta.msa_exam.auth.dto.SignInRequestDto;

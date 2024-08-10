@@ -38,7 +38,7 @@ public class OrderService {
             checkExist = checkExist && isExist;
         }
         if (!checkExist) {
-            throw new IllegalArgumentException("없는 상품 입니다.");
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "없는 상품 입니다.");
         }
     }
 

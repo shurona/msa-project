@@ -1,4 +1,4 @@
-package com.sparta.msa_exam.filter;
+package com.sparta.msa_exam.auth.filter;
 
 import com.sparta.msa_exam.auth.security.UserDetailsServiceImpl;
 import com.sparta.msa_exam.auth.utils.JwtUtils;
