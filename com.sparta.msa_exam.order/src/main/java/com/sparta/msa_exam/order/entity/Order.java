@@ -26,5 +26,14 @@ public class Order {
         order.name = name;
         return order;
     }
+
+    @Override
+    public String toString() {
+        return "Order{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                ", productIds=" + productIds +
+                '}';
+    }
 }
 

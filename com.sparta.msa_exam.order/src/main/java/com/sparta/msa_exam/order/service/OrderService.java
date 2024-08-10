@@ -1,5 +1,6 @@
 package com.sparta.msa_exam.order.service;
 
+import com.sparta.msa_exam.order.dto.OrderResponseDto;
 import com.sparta.msa_exam.order.entity.Order;
 import com.sparta.msa_exam.order.entity.OrderProduct;
 import com.sparta.msa_exam.order.feignClient.ProductClient;
@@ -8,6 +9,8 @@ import com.sparta.msa_exam.order.repository.OrderRepository;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.cache.annotation.CachePut;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -55,8 +58,9 @@ public class OrderService {
         return order.getId();
     }
 
+    @CachePut(cacheNames = "orderCache", key = "args[0]")
     @Transactional
-    public Long addProductToOrder(Long orderId, Long productId) {
+    public OrderResponseDto addProductToOrder(Long orderId, Long productId) {
         ArrayList<Long> productIds = new ArrayList<>();
         productIds.add(productId);
         checkExistProduct(productIds);
@@ -73,15 +77,27 @@ public class OrderService {
         // 상품 추가
         OrderProduct newOrderProduct = OrderProduct.CreateOrderProduct(order, productId);
         orderProductRepository.save(newOrderProduct);
-        return order.getId();
+
+        for (OrderProduct orderProduct : order.getProductIds()) {
+            productIds.add(orderProduct.getId());
+        }
+
+        return new OrderResponseDto(order.getId(), productIds);
     }
 
-    public Order findOrderById(Long orderId) {
-        return orderRepository.findById(orderId).orElseThrow(
+    @Cacheable(cacheNames = "orderCache", key = "args[0]")
+    public OrderResponseDto findOrderById(Long orderId) {
+        Order order = orderRepository.findByIdProductIds(orderId).orElseThrow(
                 () -> {
                     log.error("해당 주문이 존재하지 않습니다.");
                     return new ResponseStatusException(HttpStatus.BAD_REQUEST, "주문이 존재하지 않습니다.");
                 });
+
+        List<Long> productIds = new ArrayList<>();
+        for (OrderProduct orderProduct : order.getProductIds()) {
+            productIds.add(orderProduct.getProductId());
+        }
+        return new OrderResponseDto(order.getId(), productIds);
     }
 
 

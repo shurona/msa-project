@@ -32,27 +32,18 @@ public class OrderApiController {
             @PathVariable("orderId") Long orderId,
             @RequestBody UpdateOrderRequestDto requestDto
     ) {
-        Long orderInfoId
-                = orderService.addProductToOrder(orderId, requestDto.getProduct_id());
 
-        return new ResponseEntity<>(1L, HttpStatus.OK);
+        OrderResponseDto responseDto = orderService.addProductToOrder(orderId, requestDto.getProduct_id());
+
+        return new ResponseEntity<>(responseDto.getOrder_id(), HttpStatus.OK);
     }
 
     @GetMapping("/{orderId}")
     public ResponseEntity<OrderResponseDto> getOrder(
             @PathVariable("orderId") Long orderId
     ) {
-
-        Order order = orderService.findOrderById(orderId);
-
-        List<Long> productIds = new ArrayList<>();
-        for (OrderProduct orderProduct : order.getProductIds()) {
-            productIds.add(orderProduct.getProductId());
-        }
-        OrderResponseDto orderResponseDto = new OrderResponseDto(order.getId(), productIds);
-
-
-        return new ResponseEntity<>(orderResponseDto, HttpStatus.OK);
+        OrderResponseDto responseDto = orderService.findOrderById(orderId);
+        return new ResponseEntity<>(responseDto, HttpStatus.OK);
     }
 }
 
